@@ -20,7 +20,7 @@ class TgApi:
 		while True:
 			updates = get(f"https://api.telegram.org/bot{self.token}/getUpdates?offset={self.last_update}").json()["result"]
 			for update in updates:
-				#print(update)
+				print(update)
 				if update["message"]:
 					message = Message(update["message"])
 					for handler in self.handlers:
@@ -29,7 +29,10 @@ class TgApi:
 							handler.callback(message)
 			sleep(0.25)
 	
-	def handler(self, command):
+	def handler(self, command=None):
+		if not command:
+			print("Error! Pass command to handler")
+			return
 		def new_handler(callback):
 			Handler(callback, self, command)
 		return new_handler
@@ -41,4 +44,7 @@ class TgApi:
 		self.handlers.append(handler)
 	
 	def send_message(self, chat_id, text):
-	           get(f"https://api.telegram.org/bot{self.token}/sendMessage?chat_id={chat_id}&text={text}")
+		get(f"https://api.telegram.org/bot{self.token}/sendMessage?chat_id={chat_id}&text={text}")
+	
+	def reply(self, message, text):
+		get(f"https://api.telegram.org/bot{self.token}/sendMessage?chat_id={message.chat_id}&text={text}&reply_to_message_id={message.id}")

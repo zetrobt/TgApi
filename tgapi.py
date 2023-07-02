@@ -1,5 +1,6 @@
 from requests import get
 from time import sleep
+from .types.message import Message
 
 class TgApi:
 	def __init__(self, token=None):
@@ -16,14 +17,15 @@ class TgApi:
 	
 	def polling(self, infinity=False):
 		while True:
-			updates = get(f"https://api.telegram.org/bot{self.token}/getUpdates?offset={self.last_update}").json()
-			for update in updates["result"]:
-				print(update)
+			updates = get(f"https://api.telegram.org/bot{self.token}/getUpdates?offset={self.last_update}").json()["result"]
+			for update in updates:
+				#print(update)
 				if update["message"]:
+					message = Message(update["message"])
 					for handler in self.handlers:
-						if update["message"]["text"] == handler.command:
+						if message.text == handler.command:
 							self.last_update = int(update["update_id"]) + 1
-							handler.callback(update["message"])
+							handler.callback(message)
 			sleep(0.25)
 	
 	def create_handler(self, handler=None):

@@ -1,6 +1,7 @@
 from requests import get
 from time import sleep
 from .types.message import Message
+from .handlers import Handler
 
 class TgApi:
 	def __init__(self, token=None):
@@ -28,7 +29,12 @@ class TgApi:
 							handler.callback(message)
 			sleep(0.25)
 	
-	def create_handler(self, handler=None):
+	def handler(self, command):
+		def new_handler(callback):
+			Handler(callback, self, command)
+		return new_handler
+	
+	def _create_handler(self, handler=None):
 		if not handler:
 			print("Error! Pass handler to create_handler")
 			return

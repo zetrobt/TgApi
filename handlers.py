@@ -2,4 +2,4 @@ class Handler:
 	def __init__(self, callback, api, command):
 		self.callback = callback
 		self.command = command
-		api.create_handler(self)
+		api._create_handler(self)

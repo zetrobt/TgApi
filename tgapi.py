@@ -1,7 +1,7 @@
-from requests import Session, get
+from requests import Session, get, post
 from time import sleep
 from json import dumps
-from .types import Message, Actions
+from .types import Message, Actions, File
 from .handlers import Handler
 from .utils import *
 
@@ -33,7 +33,7 @@ class TgApi:
 							handler.callback(message)
 			sleep(0.25)
 	
-	def handler(self, command=None):
+	def command(self, command=None):
 		if not command:
 			print("Error! Pass command to handler")
 			return
@@ -41,7 +41,7 @@ class TgApi:
 			Handler(callback, self, command)
 		return new_handler
 	
-	def _create_handler(self, handler=None):
+	def _create_handler(self, handler=None, content=False):
 		if not handler:
 			print("Error! Pass handler to create_handler")
 			return
@@ -65,3 +65,11 @@ class TgApi:
 	
 	def send_action(self, chat_id, action):
 		self.rq.get(f"sendChatAction?chat_id={chat_id}&action={action}")
+	
+	def send_photo(self, chat_id, photo, caption=None):
+		if not caption:
+			return Message(self.rq.post(f"sendPhoto?chat_id={chat_id}", files={'photo': photo}).json()["result"])
+		return Message(self.rq.post(f"sendPhoto?chat_id={chat_id}&caption={caption}", files={'photo': photo}).json()["result"])
+	
+	def get_file(self, id):
+		return File(self.rq.get(f"getFile?file_id={id}").json()["result"])

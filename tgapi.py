@@ -73,3 +73,9 @@ class TgApi:
 	
 	def get_file(self, id):
 		return File(self.rq.get(f"getFile?file_id={id}").json()["result"])
+	
+	def download_file(self, path):
+		return get(f"https://api.telegram.org/file/bot{self.token}/{path}")
+	
+	def delete_message(self, chat_id, message_id):
+		self.rq.get(f"deleteMessage?chat_id={chat_id}&message_id={message_id}")

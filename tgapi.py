@@ -16,10 +16,7 @@ class TgApi:
 			self.token=token
 			self.rq = Session(base_url=f"https://api.telegram.org/bot{token}/")
 	
-	def _exec_task(self, task, *args, **kwargs):
-	           task(*args, **kwargs)
-	
-	def polling(self, infinity=False):
+	def polling(self):
 		while True:
 			updates = self.rq.get(f"getUpdates?offset={self.last_update}").json()["result"]
 			print(updates)

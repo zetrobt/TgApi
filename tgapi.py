@@ -21,11 +21,10 @@ class TgApi:
 			updates = self.rq.get(f"getUpdates?offset={self.last_update}").json()["result"]
 			print(updates)
 			for update in updates:
-				#print(update)
 				if update["message"]:
 					message = Message(update["message"])
 					for handler in self.handlers:
-						if message.text == handler.command:
+						if hasattr(message, "text") and message.text == handler.command:
 							self.last_update = int(update["update_id"]) + 1
 							handler.callback(message)
 			sleep(0.25)
@@ -43,7 +42,7 @@ class TgApi:
 			print("Error! Pass handler to create_handler")
 			return
 		self.handlers.append(handler)
-	
+			
 	def send_message(self, chat_id, text, reply_markup=None):
 		if not reply_markup:
 			return Message(self.rq.get(f"sendMessage?chat_id={chat_id}&text={text}").json()["result"])
@@ -67,6 +66,30 @@ class TgApi:
 		if not caption:
 			return Message(self.rq.post(f"sendPhoto?chat_id={chat_id}", files={'photo': photo}).json()["result"])
 		return Message(self.rq.post(f"sendPhoto?chat_id={chat_id}&caption={caption}", files={'photo': photo}).json()["result"])
+		
+	def send_document(self, chat_id, document, caption=None):
+		if not caption:
+			return Message(self.rq.post(f"sendDocument?chat_id={chat_id}", files={'document': document}).json()["result"])
+		return Message(self.rq.post(f"sendDocument?chat_id={chat_id}&caption={caption}", files={'document': document}).json()["result"])
+		
+	def send_video(self, chat_id, video, caption=None):
+		if not caption:
+			return Message(self.rq.post(f"sendVideo?chat_id={chat_id}", files={'video': video}).json()["result"])
+		return Message(self.rq.post(f"sendVideo?chat_id={chat_id}&caption={caption}", files={'video': video}).json()["result"])
+	
+	def send_audio(self, chat_id, audio, caption=None):
+		if not caption:
+			return Message(self.rq.post(f"sendAudio?chat_id={chat_id}", files={'audio': audio}).json()["result"])
+		return Message(self.rq.post(f"sendAudio?chat_id={chat_id}&caption={caption}", files={'audio': audio}).json()["result"])
+	
+	def send_sticker(self, chat_id, sticker):
+		return Message(self.rq.post(f"sendSticker?chat_id={chat_id}", files={'sticker': sticker}).json()["result"])
+	
+	def send_voice(self, chat_id, voice):
+		return Message(self.rq.post(f"sendVoice?chat_id={chat_id}", files={'voice': voice}).json()["result"])
+		
+	def send_dice(self, chat_id, emoji='🎲'):
+		return Message(self.rq.get(f"sendDice?chat_id={chat_id}&emoji={emoji}").json()["result"])
 	
 	def get_file(self, id):
 		return File(self.rq.get(f"getFile?file_id={id}").json()["result"])
@@ -76,3 +99,6 @@ class TgApi:
 	
 	def delete_message(self, chat_id, message_id):
 		self.rq.get(f"deleteMessage?chat_id={chat_id}&message_id={message_id}")
+	
+	def get_me(self):
+		return self.rq.get("getMe").json()["result"]

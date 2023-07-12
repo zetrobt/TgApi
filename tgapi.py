@@ -46,7 +46,8 @@ class TgApi:
 	def send_message(self, chat_id, text, reply_markup=None):
 		if not reply_markup:
 			return Message(self.rq.get(f"sendMessage?chat_id={chat_id}&text={text}").json()["result"])
-		return Message(self.rq.get(f"sendMessage?chat_id={chat_id}&text={text}&reply_markup={reply_markup}").json()["result"])
+		x = Message(self.rq.get(f"sendMessage?chat_id={chat_id}&text={text}&reply_markup={reply_markup}").json()["result"])
+		print(x)
 	
 	def reply_message(self, message, text, reply_markup=None):
 		if not reply_markup:
@@ -90,6 +91,9 @@ class TgApi:
 		
 	def send_dice(self, chat_id, emoji='🎲'):
 		return Message(self.rq.get(f"sendDice?chat_id={chat_id}&emoji={emoji}").json()["result"])
+		
+	def send_location(self, chat_id, latitude, longitude):
+		return Message(self.rq.get(f"sendLocation?chat_id={chat_id}&latitude={latitude}&longitude={longitude}").json()["result"])
 	
 	def get_file(self, id):
 		return File(self.rq.get(f"getFile?file_id={id}").json()["result"])

@@ -5,6 +5,7 @@ from .audio import Audio
 from .sticker import Sticker
 from .voice import Voice
 from .dice import Dice
+from .location import Location
 
 class Message:
 	def __init__(self, message):
@@ -30,4 +31,7 @@ class Message:
 			self.voice = Voice(message["voice"])
 		if "dice" in message:
 			self.dice = Dice(message["dice"])
-			
+		if "reply_to_message" in message:
+			self.reply_to_message = Message(message["reply_to_message"])
+		if "location" in message:
+			self.location = Location(message["location"])

@@ -11,4 +11,4 @@ pip install git+https://github.com/zetrobt/TgApi.git
 ```
 
 ## Documentation
-You can find it here: https://github.com/zetrobt/TgApi/wiki
+You can find it here: https://tgapi.gitbook.io/tgapi/

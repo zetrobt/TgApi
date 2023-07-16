@@ -11,7 +11,7 @@ class TgApi:
 		self.last_update = 0
 		if not token:
 			print("Insert bot token!")
-			raise SystemError
+			raise SystemExit
 		else:
 			self.token=token
 			self.rq = Session(base_url=f"https://api.telegram.org/bot{token}/")
@@ -49,10 +49,10 @@ class TgApi:
 		x = Message(self.rq.get(f"sendMessage?chat_id={chat_id}&text={text}&reply_markup={reply_markup}").json()["result"])
 		print(x)
 	
-	def reply_message(self, message, text, reply_markup=None):
+	def reply_message(self, chat_id, message_id, text, reply_markup=None):
 		if not reply_markup:
-			return Message(self.rq.get(f"sendMessage?chat_id={message.chat_id}&text={text}&reply_to_message_id={message.id}").json()["result"])
-		return Message(self.rq.get(f"sendMessage?chat_id={message.chat_id}&text={text}&reply_to_message_id={message.id}&reply_markup={reply_markup}").json()["result"])
+			return Message(self.rq.get(f"sendMessage?chat_id={chat_id}&text={text}&reply_to_message_id={message_id}").json()["result"])
+		return Message(self.rq.get(f"sendMessage?chat_id={chat_id}&text={text}&reply_to_message_id={message_id}&reply_markup={reply_markup}").json()["result"])
 	
 	def edit_message(self, chat_id, message_id, text):
 		self.rq.get(f"editMessageText?chat_id={chat_id}&message_id={message_id}&text={text}")

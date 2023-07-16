@@ -1,7 +1,7 @@
 from requests import Session, get, post
 from time import sleep
 from json import dumps
-from .types import Message, Actions, File
+from .attachments import Message, Actions, File
 from .handlers import Handler
 from .utils import *
 

@@ -1,5 +1,5 @@
 from functools import wraps
-from inspect import getmembers, getargspec, ismethod
+from inspect import getmembers, getfullargspec, ismethod
 from requests import Session
 from requests.compat import urljoin
 
@@ -8,7 +8,7 @@ def _base_url(func, base):
     @wraps(func)
     def wrapper(*args, **kwargs):
         argname = 'url'
-        argspec = getargspec(func)
+        argspec = getfullargspec(func)
 
         if argname in kwargs:
             kwargs[argname] = urljoin(base, kwargs[argname])
@@ -32,7 +32,7 @@ def inject_base_url(func):
             obj = args[0]
             
             for name, method in getmembers(obj, ismethod):
-                argspec = getargspec(method.__func__)
+                argspec = getfullargspec(method.__func__)
 
                 if 'url' in argspec[0]:
                     setattr(obj, name, _base_url(method, kwargs[argname]))
@@ -46,4 +46,4 @@ setattr(
     Session,
     '__init__',
     inject_base_url(getattr(Session, '__init__'))
-  
+)

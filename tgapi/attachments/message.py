@@ -6,6 +6,9 @@ from .sticker import Sticker
 from .voice import Voice
 from .dice import Dice
 from .location import Location
+from .poll import Poll
+from .video_note import VideoNote
+from .venue import Venue
 
 class Message:
 	def __init__(self, message):
@@ -35,3 +38,9 @@ class Message:
 			self.reply_to_message = Message(message["reply_to_message"])
 		if "location" in message:
 			self.location = Location(message["location"])
+		if "poll" in message:
+			self.poll = Poll(message["poll"])
+		if "video_note" in message:
+			self.video_note = VideoNote(message["video_note"])
+		if "venue" in message:
+			self.venue = Venue(message["venue"])

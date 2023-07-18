@@ -1,9 +1,9 @@
 from requests import Session, get, post
 from time import sleep
-from json import dumps
+from .utils import *
 from .attachments import Message, Actions, File
 from .handlers import Handler
-from .utils import *
+from .chat import Chat
 
 class TgApi:
 	def __init__(self, token=None):
@@ -32,10 +32,13 @@ class TgApi:
 	def command(self, command=None):
 		if not command:
 			print("Error! Pass command to handler")
-			return
+			raise SystemExit
 		def new_handler(callback):
 			Handler(callback, self, command)
 		return new_handler
+
+	def add_command(command, callback):
+		Handler(callback, self, command)
 	
 	def _create_handler(self, handler=None, content=False):
 		if not handler:
@@ -58,8 +61,11 @@ class TgApi:
 		self.rq.get(f"editMessageText?chat_id={chat_id}&message_id={message_id}&text={text}")
 	
 	def forward_message(self, from_chat_id, message_id, chat_id):
-		self.rq.get(f"forwardMessage?from_chat_id={from_chat_id}&message_id={message_id}&chat_id={chat_id}")
+		return Message(self.rq.get(f"forwardMessage?from_chat_id={from_chat_id}&message_id={message_id}&chat_id={chat_id}").json()["result"])
 	
+	def copy_message(self, from_chat_id, message_id, chat_id):
+		return Message(self.rq.get(f"copyMessage?from_chat_id={from_chat_id}&message_id={message_id}&chat_id={chat_id}").json()["result"])
+
 	def send_action(self, chat_id, action):
 		self.rq.get(f"sendChatAction?chat_id={chat_id}&action={action}")
 	
@@ -78,6 +84,9 @@ class TgApi:
 			return Message(self.rq.post(f"sendVideo?chat_id={chat_id}", files={'video': video}).json()["result"])
 		return Message(self.rq.post(f"sendVideo?chat_id={chat_id}&caption={caption}", files={'video': video}).json()["result"])
 	
+	def send_video_note(self, chat_id, video_note):
+		return Message(self.rq.post(f"sendVideoNote?chat_id={chat_id}", files={'video_note': video_note}).json()["result"])
+
 	def send_audio(self, chat_id, audio, caption=None):
 		if not caption:
 			return Message(self.rq.post(f"sendAudio?chat_id={chat_id}", files={'audio': audio}).json()["result"])
@@ -88,13 +97,25 @@ class TgApi:
 	
 	def send_voice(self, chat_id, voice):
 		return Message(self.rq.post(f"sendVoice?chat_id={chat_id}", files={'voice': voice}).json()["result"])
-		
+	
+	def send_animation(self, chat_id, animation):
+		return Message(self.rq.post(f"sendAnimation?chat_id={chat_id}", files={'animation': animation}).json()["result"])
+
 	def send_dice(self, chat_id, emoji='🎲'):
 		return Message(self.rq.get(f"sendDice?chat_id={chat_id}&emoji={emoji}").json()["result"])
 		
 	def send_location(self, chat_id, latitude, longitude):
 		return Message(self.rq.get(f"sendLocation?chat_id={chat_id}&latitude={latitude}&longitude={longitude}").json()["result"])
 	
+	def send_poll(self, chat_id, question, options, poll_type="regular", is_anonymous=False, allows_multiple_answers=False):
+		return Message(self.rq.get(f"sendPoll?chat_id={chat_id}&question={question}&options={options}&type={poll_type}&is_anonymous={is_anonymous}&allows_multiple_answers={allows_multiple_answers}").json()["result"])
+
+	def stop_poll(self, chat_id, message_id):
+		self.rq.get(f"stopPoll?chat_id={chat_id}&message_id={message_id}")
+
+	def send_venue(self, chat_id, latitude, longitude, title, address):
+		return Message(self.rq.get(f"sendVenue?chat_id={chat_id}&latitude={latitude}&longitude={longitude}&title={title}&address={address}").json()["result"])
+
 	def get_file(self, id):
 		return File(self.rq.get(f"getFile?file_id={id}").json()["result"])
 	
@@ -106,3 +127,30 @@ class TgApi:
 	
 	def get_me(self):
 		return self.rq.get("getMe").json()["result"]
+
+	def get_my_name(self):
+		return self.rq.get("getMyName").json()["result"]
+
+	def set_my_name(self, name):
+		return self.rq.get(f"setMyName?name={name}").json()["result"]
+
+	def get_my_description(self):
+		return self.rq.get("getMyDescription").json()["result"]
+
+	def set_my_description(self, description):
+		return self.rq.get(f"setMyDescription?description={description}").json()["result"]
+
+	def get_my_short_description(self):
+		return self.rq.get("getMyShortDescription").json()["result"]
+
+	def set_my_short_description(self, short_description):
+		return self.rq.get(f"setMyShortDescription?short_description={short_description}").json()["result"]
+
+	def set_chat_menu_button(self, chat_id, menu_button):
+		return self.rq.get(f"setChatMenuButton?chat_id={chat_id}&menu_button={menu_button}").json()["result"]
+
+	def get_chat_menu_button(self, chat_id):
+		return self.rq.get(f"getChatMenuButton?chat_id={chat_id}").json()["result"]
+
+	def get_chat(self, chat_id):
+		return Chat(self.rq.get(f"getChat?chat_id={chat_id}").json()["result"])

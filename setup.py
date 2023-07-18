@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="TgApi",
-    version="1.7",
+    version="1.7.1",
     description="Experimental library for working with Telegram in Python",
     url="https://github.com/zetrobt/TgApi",
     download_url="https://github.com/zetrobt/TgApi/releases/latest",

@@ -21,11 +21,11 @@ class TgApi:
 			updates = self.rq.get(f"getUpdates?offset={self.last_update}").json()["result"]
 			print(updates)
 			for update in updates:
+				self.last_update = int(update["update_id"]) + 1
 				if update["message"]:
 					message = Message(update["message"])
 					for handler in self.handlers:
 						if hasattr(message, "text") and message.text == handler.command:
-							self.last_update = int(update["update_id"]) + 1
 							handler.callback(message)
 			sleep(0.25)
 	

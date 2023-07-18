@@ -37,7 +37,7 @@ class TgApi:
 			Handler(callback, self, command)
 		return new_handler
 
-	def add_command(command, callback):
+	def add_command(self, command, callback):
 		Handler(callback, self, command)
 	
 	def _create_handler(self, handler=None, content=False):

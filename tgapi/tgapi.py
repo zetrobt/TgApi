@@ -6,17 +6,19 @@ from .handlers import Handler
 from .chat import Chat
 
 class TgApi:
-	def __init__(self, token=None):
+	def __init__(self):
 		self.handlers = []
+		self.new_message_handler = None
 		self.last_update = 0
+	
+	def polling(self, token=None):
 		if not token:
 			print("Insert bot token!")
 			raise SystemExit
 		else:
 			self.token=token
 			self.rq = Session(base_url=f"https://api.telegram.org/bot{token}/")
-	
-	def polling(self):
+
 		while True:
 			updates = self.rq.get(f"getUpdates?offset={self.last_update}").json()["result"]
 			print(updates)
@@ -27,6 +29,8 @@ class TgApi:
 					for handler in self.handlers:
 						if hasattr(message, "text") and message.text == handler.command:
 							handler.callback(message)
+						elif self.new_message_handler is not None:
+							self.new_message_handler(message)
 			sleep(0.25)
 	
 	def command(self, command=None):
@@ -35,6 +39,11 @@ class TgApi:
 			raise SystemExit
 		def new_handler(callback):
 			Handler(callback, self, command)
+		return new_handler
+
+	def on_new_message(self):
+		def new_handler(callback):
+			self.new_message_handler = callback
 		return new_handler
 
 	def add_command(self, command, callback):

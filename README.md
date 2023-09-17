@@ -11,9 +11,4 @@ pip install git+https://github.com/zetrobt/TgApi.git
 ```
 
 ## Documentation
-Use it like default Threads, but with decorators:
-```python
-@thread()
-def foo():
-    print("bar")
-```
+You can find documentation here: https://tgapi.gitbook.io/

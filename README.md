@@ -1,3 +1,6 @@
+## Warning
+Shit code, need to be rewritten later
+
 ## TgApi
 Experimental library for working with Telegram in Python
 
